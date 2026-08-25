@@ -301,13 +301,6 @@
 
   <div class="wrap">
     <div class="content">
-      <div class="notices" id="notices">
-        <div class="notice info">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-          <div>Disney (Tue 1 Sep, 08:30–21:00) overrides the Center Parcs "Kids Disco" (18:15–18:45) — marked below. There are also two identical Kids Disco bookings for that slot, worth cancelling in My Center Parcs.</div>
-        </div>
-      </div>
-
       <div class="live-status" id="liveStatus">
         <span class="live-dot" id="liveDot"></span>
         <span id="liveText">Live updates not yet configured</span>
@@ -399,7 +392,7 @@ const DAYS = [
       details:[['Tickets','2× Adult, 2× Child — Tiqets ref TIQ451039778'],['Entry','E-ticket via Tiqets/Galaxy Connect — no separate registration needed, go straight to the turnstiles'],['Park choice','Selected on arrival — choose Disney Adventure World (see below) for World of Frozen'],['Cancel/reschedule','Free up to 23:59 on 29 Aug — already passed, ticket is now locked in']],
       links:[['Directions','https://www.google.com/maps/search/?api=1&query=Disneyland+Paris'],['Manage booking','https://www.tiqets.com']]},
     {cat:'forest', time:'18:15–18:45', tag:'Overridden', title:'Orry & Friends: Kids Disco', place:'Center Parcs activity, Bailly-Romainvilliers',
-      details:[], conflict:'Skipping this — it clashes with your Disney day. Worth cancelling both duplicate bookings in My Center Parcs so the slot frees up for someone else.'}
+      details:[]}
   ],
   strategy:{
     title:'Making the most of one park',
@@ -535,7 +528,7 @@ if ('serviceWorker' in navigator) {
 const MAP_CONFIG = {
   // Paste the "Embed on my site" iframe src URL from Google My Maps here
   // (My Maps → your map → ⋮ menu → Embed on my site → copy the src="...").
-  embedUrl: 'PASTE_YOUR_GOOGLE_MY_MAPS_EMBED_URL_HERE'
+  embedUrl: 'https://www.google.com/maps/d/embed?mid=1Uh53w30o0s7pU7Qh1tlkIHINaUh5PP0'
 };
 
 (function renderMap(){
