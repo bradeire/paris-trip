@@ -245,6 +245,25 @@
     cursor:pointer; padding:0; text-decoration:underline;
   }
 
+  /* ===== Trip map card ===== */
+  .map-card{
+    background:var(--md-surface-container-lowest);
+    border-radius:20px;
+    padding:16px 18px;
+    margin-bottom:18px;
+    box-shadow:var(--elev1);
+  }
+  .map-card .map-head{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700;
+    color:var(--md-primary); margin-bottom:10px;
+  }
+  .map-card iframe{
+    width:100%; height:320px; border:0; border-radius:14px; display:block;
+  }
+  .map-card .map-placeholder{
+    font-size:13px; color:var(--md-on-surface-variant); line-height:1.55;
+  }
+
   /* Install prompt banner */
   #installBar{
     display:none; position:sticky; bottom:0; z-index:20;
@@ -300,6 +319,11 @@
       </div>
       <div id="updatesFeed"></div>
 
+      <div class="map-card" id="mapCard">
+        <div class="map-head">Trip map</div>
+        <div id="mapEmbed"></div>
+      </div>
+
       <div class="chip-scroll" id="dayNav"></div>
       <div id="dayPanels"></div>
     </div>
@@ -344,12 +368,15 @@ const DAYS = [
 },
 {
   id:'d3', date:'Sun 30 Aug', title:'Paris, full day', loc:'15th arrondissement & central Paris',
-  items:[],
-  gaps:[{when:'No fixed bookings today — a free day around the Eiffel Tower', items:[
+  items:[
+    {cat:'paris', time:'Board 11:10 · Departs 11:30', tag:'Booked', title:'Family Cruise — Vedettes de Paris', place:'2 Port de Suffren, 75007 Paris — at the foot of the Eiffel Tower',
+      details:[['Booking ref','GNEE27YN'],['Party','2 adult, 2 child'],['Duration','1 hour, guided in French & English'],['Total paid','€62.00'],['Phone','01 44 18 08 03'],['Tickets','E-tickets + PDF vouchers attached to the confirmation email — bring them (digital is fine) to board'],['Finding it','Face the river with your back to the tower, head toward Iéna Bridge, down the stairs on your left — look for the red/white/blue flags. Board from 20 min before departure.']],
+      links:[['Call','tel:+33144180803'],['Directions','https://www.google.com/maps/search/?api=1&query=Vedettes+de+Paris+Port+de+Suffren+75007+Paris'],['Manage booking','https://www.vedettesdeparis.fr/en/plan-your-visit/']]}
+  ],
+  gaps:[{when:'Around the 11:30 cruise — rest of the day', items:[
+    '<b>Trocadéro Gardens</b> — the classic photo view across the river; easy to combine with the cruise since it\'s right by the boarding point.',
+    '<b>Champ de Mars</b> — picnic lawn right under the tower, good for lunch straight after you dock.',
     '<b>Eiffel Tower</b> — book timed entry ahead if you want to go up; otherwise the base and gardens are free to wander.',
-    '<b>Trocadéro Gardens</b> — the classic photo view across the river, especially nice mid-morning before crowds build.',
-    '<b>Champ de Mars</b> — picnic lawn right under the tower, good for a break with the kids.',
-    '<b>Seine river cruise</b> — Bateaux Parisiens dock at the foot of the Eiffel Tower, ~1hr, good option if legs are tired.',
     '<b>Musée du quai Branly</b> — a few minutes from the hotel, gardens are free and a nice detour if the museum itself isn\'t for littler ones.'
   ]}]
 },
@@ -509,10 +536,26 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 
+/* ===== Trip map: Google My Maps embed (itinerary pins + nearby metro) ===== */
+const MAP_CONFIG = {
+  // Paste the "Embed on my site" iframe src URL from Google My Maps here
+  // (My Maps → your map → ⋮ menu → Embed on my site → copy the src="...").
+  embedUrl: 'PASTE_YOUR_GOOGLE_MY_MAPS_EMBED_URL_HERE'
+};
+
+(function renderMap(){
+  const el = document.getElementById('mapEmbed');
+  if(MAP_CONFIG.embedUrl && !MAP_CONFIG.embedUrl.startsWith('PASTE_')){
+    el.innerHTML = `<iframe src="${MAP_CONFIG.embedUrl}" loading="lazy" allowfullscreen></iframe>`;
+  } else {
+    el.innerHTML = `<div class="map-placeholder">Map not set up yet — see README.md ("Trip map") for how to build it in Google My Maps and drop the embed link in here.</div>`;
+  }
+})();
+
 /* ===== Live updates: poll the Apps Script feed every 90 min, until 5 Sep 2026 ===== */
 const LIVE_CONFIG = {
   // Paste the /exec URL from your Apps Script deployment here (see Code.gs).
-  scriptUrl: 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
+  scriptUrl: 'https://script.google.com/macros/s/AKfycbxXJRcze0n4_rMayYhzz02wuSIdRSKTwMSccgTyAkbj4MgqQxMEOIoBXV1mZTRmmDibBg/exec',
   endDate: '2026-09-05T23:59:59',
   intervalMs: 90 * 60 * 1000 // 90 minutes
 };

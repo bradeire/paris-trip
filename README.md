@@ -13,6 +13,7 @@ manifest.json        makes it installable ("Add to Home Screen")
 sw.js                 service worker — caches the app so it opens offline
 icons/                app icons for home screen / splash
 Code.gs               Apps Script backend for the live "what's new" feed
+map/                   CSVs to import into Google My Maps for the trip map
 ```
 
 ## 1. Push it to a private repo
@@ -111,6 +112,39 @@ check whenever you open it after a gap." That's a genuine platform limit, not
 a bug in the app — Android/Chrome behaves a little better but isn't fully
 guaranteed either. For a two-person family app this is a fine trade-off; a
 truly always-on background check would need a real push-notification backend.
+
+## Trip map (Google My Maps — itinerary pins + nearby metro)
+
+The app has a "Trip map" card near the top with a placeholder until you build
+the map once, using your own Google account. No API key, no billing.
+
+1. Go to [mymaps.google.com](https://mymaps.google.com) → **Create a new map**.
+   Name it something like "Paris Trip — Aug 2026".
+2. In the default (first) layer, click **Import** and upload
+   `map/itinerary-pins.csv` from this repo. When asked, set **Address** as
+   the placemark location column and **Name** as the title column.
+3. Click **Add layer**, then **Import** again and upload
+   `map/metro-stations.csv` the same way — this keeps the metro stations on
+   a separate layer so you can toggle them, or give them a different pin
+   colour (click the layer's paint-bucket icon → style by "Uniform" and pick
+   a colour, e.g. blue for metro vs red for itinerary stops).
+4. Optional: use the **Add directions** tool (the line/route icon) to draw a
+   walking route from the Novotel to the Eiffel Tower, or to a nearby metro
+   station — pick "Walking" as the mode.
+5. **Share → change access to "Anyone with the link"** (needed for the embed
+   to load in the app — it's still unlisted, nobody finds it without the
+   link).
+6. Menu (⋮ next to the map title) → **Embed on my site**. Copy the `src="…"`
+   URL out of the `<iframe>` code it gives you.
+7. Open `index.html`, find `MAP_CONFIG` near the bottom, paste that URL into
+   `embedUrl`. Commit, push, redeploy.
+
+The two CSVs already have every booked location (hotel, Villages Nature,
+Disneyland, the Seine cruise, both Eurotunnel terminals) plus the handful of
+free-time spots from Sun 30 Aug, and a metro-stations layer covering the
+15th/16th arrondissement around the hotel. Re-import a CSV any time to
+refresh a layer if plans change — Google My Maps keeps the map itself in
+your account, so there's nothing else to redeploy on that end.
 
 ## Updating it later
 
