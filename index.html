@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Paris Trip — Bradley Family</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#5C63C9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Paris Trip">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ Material Design 3 tokens ============ */
+  :root{
+    color-scheme: light;
+    /* Core M3 roles — light, airy tonal palette */
+    --md-primary: #5C63C9;
+    --md-on-primary: #FFFFFF;
+    --md-primary-container: #E2E0FF;
+    --md-on-primary-container: #12144C;
+
+    --md-secondary: #5D5C72;
+    --md-secondary-container: #E2E0F9;
+    --md-on-secondary-container: #1A1A2C;
+
+    --md-surface: #FBFCF8;
+    --md-surface-dim: #F1F2EC;
+    --md-surface-bright: #FBFCF8;
+    --md-surface-container-lowest: #FFFFFF;
+    --md-surface-container-low: #F5F6F0;
+    --md-surface-container: #EFF0EA;
+    --md-surface-container-high: #E9EAE4;
+    --md-on-surface: #1B1C18;
+    --md-on-surface-variant: #46473F;
+    --md-outline: #C9CABE;
+    --md-outline-variant: #E1E2D6;
+
+    /* category tonal roles (M3 "extended" tertiary-style hues) */
+    --paris: #8B4A17;
+    --paris-container: #FFDDBB;
+    --forest: #2E6A45;
+    --forest-container: #B6F0C4;
+    --disney: #6750A4;
+    --disney-container: #EADDFF;
+    --travel: #3A5B6E;
+    --travel-container: #CDE7F6;
+    --warn: #8C4A2F;
+    --warn-container: #FFDBCB;
+
+    --elev1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px 1px rgba(0,0,0,0.05);
+    --elev2: 0 1px 2px rgba(0,0,0,0.07), 0 2px 6px 2px rgba(0,0,0,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--md-surface);
+    color:var(--md-on-surface);
+    font-family:'Roboto Flex','Roboto',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 0 48px;}
+
+  /* ===== Top app bar (M3) ===== */
+  .appbar{
+    position:sticky; top:0; z-index:20;
+    background:var(--md-surface-container-low);
+    padding: max(14px, env(safe-area-inset-top)) 20px 14px;
+    border-bottom:1px solid var(--md-outline-variant);
+  }
+  .appbar .row{display:flex; align-items:center; gap:12px;}
+  .appbar .icon-badge{
+    width:40px; height:40px; border-radius:12px;
+    background:var(--md-primary-container); color:var(--md-on-primary-container);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .appbar .icon-badge svg{width:22px;height:22px;}
+  .appbar h1{
+    font-family:'Roboto',sans-serif; font-size:20px; font-weight:500; margin:0; line-height:1.2;
+    color:var(--md-on-surface);
+  }
+  .appbar .meta{font-size:12.5px; color:var(--md-on-surface-variant); margin-top:1px;}
+
+  .content{padding:16px 16px 0;}
+
+  /* ===== Notices as M3 tonal banners ===== */
+  .notices{display:flex; flex-direction:column; gap:10px; margin-bottom:18px;}
+  .notice{
+    border-radius:16px; padding:14px 16px; font-size:13.5px; line-height:1.55;
+    display:flex; gap:12px; align-items:flex-start;
+  }
+  .notice svg{width:20px;height:20px;flex-shrink:0; margin-top:1px;}
+  .notice.warn{background:var(--warn-container); color:#3D2113;}
+  .notice.warn svg{color:var(--warn);}
+  .notice.info{background:var(--travel-container); color:#12303D;}
+  .notice.info svg{color:var(--travel);}
+  .notice b{font-weight:700;}
+
+  /* ===== Day chip nav (M3 filter chips) ===== */
+  .chip-scroll{
+    display:flex; gap:8px; overflow-x:auto; padding:2px 2px 14px;
+    scrollbar-width:none;
+  }
+  .chip-scroll::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;
+    font-family:'Roboto',sans-serif; font-size:13px; font-weight:500;
+    border:1px solid var(--md-outline);
+    background:var(--md-surface-container-lowest);
+    color:var(--md-on-surface-variant);
+    border-radius:100px;
+    padding:9px 16px 9px 14px;
+    cursor:pointer;
+    display:flex; flex-direction:column; align-items:flex-start; gap:1px;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .chip .d{font-size:11.5px; opacity:.85;}
+  .chip .t{font-weight:500;}
+  .chip.active{
+    background:var(--md-primary); border-color:var(--md-primary); color:var(--md-on-primary);
+  }
+  .chip.active .d{color:#DCDBFF;}
+
+  /* ===== Day panel ===== */
+  .day-panel{display:none;}
+  .day-panel.active{display:block; animation:rise .22s ease;}
+  @keyframes rise{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .day-head{margin-bottom:14px; padding:0 2px;}
+  .day-head h2{font-family:'Roboto',sans-serif; font-weight:500; font-size:22px; margin:0 0 2px; letter-spacing:-.01em;}
+  .day-head .loc{font-size:13px; color:var(--md-on-surface-variant);}
+
+  /* timeline */
+  .timeline{position:relative; padding-left:22px; margin-bottom:4px;}
+  .timeline::before{content:""; position:absolute; left:5px; top:8px; bottom:8px; width:2px; background:var(--md-outline-variant); border-radius:2px;}
+  .item{position:relative; margin-bottom:12px;}
+  .item::before{
+    content:""; position:absolute; left:-22px; top:14px; width:10px; height:10px; border-radius:50%;
+    background:var(--md-surface-container-lowest); border:2px solid var(--md-on-surface-variant); z-index:1;
+  }
+  .item.cat-paris::before{border-color:var(--paris);}
+  .item.cat-forest::before{border-color:var(--forest);}
+  .item.cat-disney::before{border-color:var(--disney);}
+  .item.cat-travel::before{border-color:var(--travel);}
+
+  /* ===== M3 filled card ===== */
+  .card{
+    background:var(--md-surface-container-lowest);
+    border-radius:20px;
+    padding:16px 18px;
+    box-shadow:var(--elev1);
+  }
+  .card .top{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap;}
+  .time{font-family:'Roboto Mono',monospace; font-size:12px; color:var(--md-on-surface-variant); font-weight:500;}
+  .tag{
+    font-family:'Roboto',sans-serif; font-size:11px; font-weight:600; letter-spacing:.02em;
+    padding:3px 10px; border-radius:100px;
+  }
+  .cat-paris .tag{background:var(--paris-container); color:var(--paris);}
+  .cat-forest .tag{background:var(--forest-container); color:var(--forest);}
+  .cat-disney .tag{background:var(--disney-container); color:var(--disney);}
+  .cat-travel .tag{background:var(--travel-container); color:var(--travel);}
+
+  .card h3{font-family:'Roboto',sans-serif; font-size:16.5px; font-weight:500; margin:8px 0 2px; color:var(--md-on-surface);}
+  .card .place{font-size:13px; color:var(--md-on-surface-variant); margin-bottom:8px; line-height:1.4;}
+  .card .details{font-size:13px; color:var(--md-on-surface); line-height:1.7; margin-top:6px;
+    background:var(--md-surface-container-low); border-radius:12px; padding:10px 12px;}
+  .card .details div{display:flex; gap:8px;}
+  .card .details .lbl{color:var(--md-on-surface-variant); flex-shrink:0; min-width:78px; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; padding-top:1px;}
+  .links{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .links a{
+    font-size:12.5px; font-weight:500; text-decoration:none;
+    border:1px solid var(--md-outline); border-radius:100px; padding:7px 14px; color:var(--md-primary);
+    background:var(--md-surface-container-lowest);
+    display:inline-flex; align-items:center; gap:4px;
+    transition:background .15s ease;
+  }
+  .links a:hover{background:var(--md-primary-container);}
+
+  .note{font-size:12.5px; color:var(--md-on-surface-variant); margin-top:10px; line-height:1.55;}
+  .conflict{
+    margin-top:10px; font-size:12.5px; background:var(--warn-container); color:#3D2113;
+    padding:10px 12px; border-radius:12px; line-height:1.55; font-weight:500;
+  }
+
+  /* gap suggestion block */
+  .gap{
+    margin:10px 0 18px 0;
+    padding:14px 16px;
+    border-radius:16px;
+    background:var(--md-surface-container);
+  }
+  .gap .gaphead{
+    font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700;
+    color:var(--md-primary); margin-bottom:8px;
+  }
+  .gap ul{margin:0; padding-left:18px; font-size:13.5px; line-height:1.7; color:var(--md-on-surface);}
+  .gap li b{font-weight:600;}
+  .gap li{margin-bottom:2px;}
+
+  /* Disney strategy section */
+  .strategy{
+    margin-top:18px; background:var(--disney-container); border-radius:20px; padding:20px 20px;
+  }
+  .strategy h4{font-family:'Roboto',sans-serif; font-size:15.5px; margin:0 0 12px; color:#3B2E63; font-weight:600;}
+  .strategy ol{margin:0; padding-left:20px; font-size:13.5px; line-height:1.75; color:#2E2547;}
+  .strategy .transport{display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:10px; margin:0 0 16px;}
+  .transport .opt{background:rgba(255,255,255,0.55); border-radius:14px; padding:12px 14px;}
+  .transport .opt .h{font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:#5B4B85; font-weight:600;}
+  .transport .opt .v{font-family:'Roboto',sans-serif; font-size:17px; font-weight:600; margin:2px 0; color:#3B2E63;}
+  .transport .opt .d{font-size:11.5px; color:#5B4B85;}
+
+  /* ===== Live status + updates feed ===== */
+  .live-status{
+    display:flex; align-items:center; gap:8px; font-size:12px; color:var(--md-on-surface-variant);
+    padding:2px 2px 12px; flex-wrap:wrap;
+  }
+  .live-dot{width:8px;height:8px;border-radius:50%; background:var(--md-outline); flex-shrink:0;}
+  .live-dot.ok{background:#3D8B5F;}
+  .live-dot.checking{background:#B98A20; animation:pulse 1s infinite;}
+  .live-dot.error{background:var(--warn);}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  .live-status button{
+    margin-left:auto; border:1px solid var(--md-outline); background:var(--md-surface-container-lowest);
+    color:var(--md-primary); font-size:11.5px; font-weight:600; border-radius:100px; padding:5px 12px; cursor:pointer;
+  }
+  .updates-feed{
+    background:var(--md-primary-container); color:var(--md-on-primary-container);
+    border-radius:16px; padding:14px 16px; margin-bottom:16px; font-size:13px; line-height:1.6;
+  }
+  .updates-feed .fh{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:8px;}
+  .updates-feed ul{margin:0; padding-left:18px;}
+  .updates-feed li{margin-bottom:4px;}
+  .updates-feed .dismiss{
+    margin-top:8px; background:none; border:none; color:var(--md-primary); font-weight:600; font-size:12px;
+    cursor:pointer; padding:0; text-decoration:underline;
+  }
+
+  /* Install prompt banner */
+  #installBar{
+    display:none; position:sticky; bottom:0; z-index:20;
+    background:var(--md-primary); color:var(--md-on-primary);
+    padding:12px 18px; font-size:13.5px; align-items:center; justify-content:space-between; gap:12px;
+    box-shadow:var(--elev2);
+  }
+  #installBar button{
+    background:var(--md-on-primary); color:var(--md-primary); border:none; border-radius:100px;
+    padding:8px 16px; font-weight:600; font-size:13px; cursor:pointer;
+  }
+  #installBar .x{background:none; color:var(--md-on-primary); font-size:18px; padding:4px 8px;}
+
+  footer{margin:32px 16px 0; padding-top:16px; border-top:1px solid var(--md-outline-variant);
+    font-size:11.5px; color:var(--md-on-surface-variant); text-align:center;}
+
+  @media (max-width:600px){
+    .content{padding:14px 12px 0;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="appbar">
+    <div class="row">
+      <div class="icon-badge">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l4 9h-2.5l3 6h-9l3-6H8l4-9z" fill="currentColor"/><circle cx="12" cy="4.2" r="1.1" fill="#FFC24B"/></svg>
+      </div>
+      <div>
+        <h1>Paris Trip</h1>
+        <div class="meta">Bradley family · 28 Aug – 4 Sep 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="content">
+      <div class="notices" id="notices">
+        <div class="notice warn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 21h22L12 2zm0 5 7.5 13h-15L12 7zm-1 4v4h2v-4h-2zm0 5v2h2v-2h-2z"/></svg>
+          <div><b>Tight return crossing.</b> Villages Nature Paris checkout is before 10:00 on Fri 4 Sep, but LeShuttle Calais→Folkestone (ref 23963150) is booked ~10:24–11:59, and it's a 2h45–3h10 drive to Calais. Check the exact check-in cutoff and consider an earlier checkout or a later crossing.</div>
+        </div>
+        <div class="notice info">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+          <div>Disney (Tue 1 Sep, 08:30–21:00) overrides the Center Parcs "Kids Disco" (18:15–18:45) — marked below. There are also two identical Kids Disco bookings for that slot, worth cancelling in My Center Parcs.</div>
+        </div>
+      </div>
+
+      <div class="live-status" id="liveStatus">
+        <span class="live-dot" id="liveDot"></span>
+        <span id="liveText">Live updates not yet configured</span>
+        <button id="checkNowBtn">Check now</button>
+      </div>
+      <div id="updatesFeed"></div>
+
+      <div class="chip-scroll" id="dayNav"></div>
+      <div id="dayPanels"></div>
+    </div>
+
+    <footer>Built from Google Calendar &amp; Gmail · works offline once installed · ask Claude to refresh it when a new booking comes in</footer>
+  </div>
+
+  <div id="installBar">
+    <span>Add this to your home screen for one-tap access.</span>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="installBtn">Install</button>
+      <button class="x" id="dismissInstall" aria-label="Dismiss">×</button>
+    </div>
+  </div>
+
+<script>
+const DAYS = [
+{
+  id:'d1', date:'Fri 28 Aug', title:'Setting off', loc:'At home',
+  items:[
+    {cat:'travel', time:'21:00–21:30', tag:'Prep', title:'Sort European roaming', place:'Before you leave',
+      details:[], note:'Reminder from your calendar — get the VOXI European roaming passes sorted tonight so data works the moment you cross.'}
+  ],
+  gaps:[]
+},
+{
+  id:'d2', date:'Sat 29 Aug', title:'Crossing to France', loc:'Folkestone → Calais → Paris 15e',
+  items:[
+    {cat:'travel', time:'10:36–12:11 (UK time)', tag:'LeShuttle', title:'Folkestone → Calais', place:'Eurotunnel Folkestone Terminal, Ashford Road, Folkestone, Kent CT18 8XX',
+      details:[['Booking ref','23963150'],['Advice','Arrive 45–90 min before check-in time; watch the live departures board for your platform.']],
+      links:[['Live departures','https://www.leshuttle.com/uk-en/travel-updates/live-departures'],['Manage booking','https://www.leshuttle.com/uk-en/my-booking'],['Directions','https://www.google.com/maps/search/?api=1&query=Eurotunnel+Folkestone+Terminal']]},
+    {cat:'travel', time:'~12:15–15:00', tag:'Drive', title:'Calais → central Paris', place:'A16 / A1 motorway, ~290 km, approx. 2h45–3h',
+      details:[], note:'Straight run down to the Novotel — worth a fuel/toll-booth stop en route.'},
+    {cat:'paris', time:'From 15:00', tag:'Check-in', title:'Novotel Paris Centre Tour Eiffel', place:'61 Quai de Grenelle, 75015 Paris',
+      details:[['Confirmation','B_58628196 (via Super.com)'],['Room','Superior Room, 1 Queen Bed + Double Sofa Bed, room only'],['Guests','Andrew, Clare, Caelan & Isla Bradley'],['Checkout','Mon 31 Aug, 12:00'],['Local fees','~£28.97 payable at check-in; city tax ~€8.45pp/night (under-18s exempt)'],['Note','100% non-refundable booking, cannot be modified']],
+      links:[['Directions','https://www.google.com/maps/search/?api=1&query=Novotel+Paris+Centre+Tour+Eiffel+61+Quai+de+Grenelle+Paris'],['Manage booking','https://www.super.com/travel/bookings/52908d84-457a-411f-a4e5-ac2611d4bb9b/confirmation']]}
+  ],
+  gaps:[{when:'Evening, once settled in', items:[
+    '<b>Walk to the Eiffel Tower</b> — ~20 min on foot via Pont de Bir-Hakeim, or a quick stroll along the Quai to see it lit up after dark.',
+    '<b>Riverside dinner</b> — several brasseries along Quai de Grenelle and Rue Linois, a few minutes from the hotel.'
+  ]}]
+},
+{
+  id:'d3', date:'Sun 30 Aug', title:'Paris, full day', loc:'15th arrondissement & central Paris',
+  items:[],
+  gaps:[{when:'No fixed bookings today — a free day around the Eiffel Tower', items:[
+    '<b>Eiffel Tower</b> — book timed entry ahead if you want to go up; otherwise the base and gardens are free to wander.',
+    '<b>Trocadéro Gardens</b> — the classic photo view across the river, especially nice mid-morning before crowds build.',
+    '<b>Champ de Mars</b> — picnic lawn right under the tower, good for a break with the kids.',
+    '<b>Seine river cruise</b> — Bateaux Parisiens dock at the foot of the Eiffel Tower, ~1hr, good option if legs are tired.',
+    '<b>Musée du quai Branly</b> — a few minutes from the hotel, gardens are free and a nice detour if the museum itself isn\'t for littler ones.'
+  ]}]
+},
+{
+  id:'d4', date:'Mon 31 Aug', title:'Paris → Villages Nature Paris', loc:'15th arr. → Bailly-Romainvilliers',
+  items:[
+    {cat:'paris', time:'By 12:00', tag:'Checkout', title:'Novotel Paris Centre Tour Eiffel', place:'61 Quai de Grenelle, 75015 Paris', details:[]},
+    {cat:'travel', time:'~12:00–13:00', tag:'Drive', title:'Paris → Villages Nature Paris', place:'A4 motorway, ~55 km, approx. 50–60 min', details:[]},
+    {cat:'forest', time:'From 16:00', tag:'Check-in', title:'Villages Nature Paris (Center Parcs)', place:'Bailly-Romainvilliers, 77700, France',
+      details:[['Reservation','n°2545790'],['Accommodation','Unit #3155, 1 accommodation, 4 guests'],['Checkout','Fri 4 Sep, before 10:00'],['Phone','01 73 27 55 91 (+33 1 73 27 55 91) — local call rate'],['Check-in','24hr arrival, from 16:00; e-ticket/QR already issued — show it on arrival to skip the desk']],
+      links:[['Call resort','tel:+33173275591'],['Directions','https://www.google.com/maps/search/?api=1&query=Villages+Nature+Paris+Bailly-Romainvilliers'],['My Center Parcs','https://www.centerparcs.eu/my/in-en/login']]},
+    {cat:'forest', time:'16:30–17:00', tag:'Activity', title:'Kids Safari', place:'Mini Jeep 4, on-resort',
+      details:[['Booked for','1 (child)'],['Price','€21.00'],['Rules','Ages 3–14, max 2 children per car, one accompanying adult required throughout']]}
+  ],
+  gaps:[{when:'Evening, after Kids Safari', items:[
+    '<b>Aqualagon</b> — the resort\'s tropical indoor/outdoor waterpark, open into the evening; good first taste of the resort.',
+    '<b>BelleVie Farm</b> — gentle, low-key wander with younger kids if everyone\'s tired from the drive.'
+  ]}]
+},
+{
+  id:'d5', date:'Tue 1 Sep', title:'Disneyland Paris day', loc:'Disney Adventure World — World of Frozen',
+  items:[
+    {cat:'disney', time:'08:30–21:00', tag:'All day', title:'Disneyland® Paris — 1-Day 1-Park Ticket', place:'Boulevard de Parc, 77700 Marne-la-Vallée',
+      details:[['Tickets','2× Adult, 2× Child — Tiqets ref TIQ451039778'],['Entry','E-ticket via Tiqets/Galaxy Connect — no separate registration needed, go straight to the turnstiles'],['Park choice','Selected on arrival — choose Disney Adventure World (see below) for World of Frozen'],['Cancel/reschedule','Free up to 23:59 on 29 Aug — already passed, ticket is now locked in']],
+      links:[['Directions','https://www.google.com/maps/search/?api=1&query=Disneyland+Paris'],['Manage booking','https://www.tiqets.com']]},
+    {cat:'forest', time:'18:15–18:45', tag:'Overridden', title:'Orry & Friends: Kids Disco', place:'Center Parcs activity, Bailly-Romainvilliers',
+      details:[], conflict:'Skipping this — it clashes with your Disney day. Worth cancelling both duplicate bookings in My Center Parcs so the slot frees up for someone else.'}
+  ],
+  strategy:{
+    title:'Making the most of one park',
+    transport:[
+      {h:'Drive', v:'~8 min', d:'Parking ≈€30/day, opens 8:00am, 10–15 min walk to entrance'},
+      {h:'Public bus', v:'~20–25 min', d:'Line 47 / 2231, Villages Nature stop, every 20–30 min, ≈€2pp each way'},
+      {h:'Taxi', v:'~6–8 min', d:'≈€20–26 one way, easiest with a stroller and tired legs at the end of the day'}
+    ],
+    steps:[
+      'Check the Disneyland Paris app the night before for the day\'s opening time and Premier Access pricing.',
+      'Head straight for <b>Disney Adventure World</b> (the reimagined former Walt Disney Studios Park) — it now holds World of Frozen, Worlds of Pixar and Marvel Avengers Campus.',
+      'Go to <b>World of Frozen</b> first, at rope drop, and ride <b>Frozen Ever After</b> before the queue builds — as a newly-opened headline ride it\'s likely to draw the longest waits of the day.',
+      'Consider paying for Premier Access / a virtual queue slot on Frozen Ever After if the standby wait looks long when you arrive.',
+      'From there, work outward: Worlds of Pixar (Crush\'s Coaster is a highlight) and Avengers Campus for the afternoon.',
+      'Build in an Anna &amp; Elsa meet-and-greet and a wander through Arendelle village — good for a lull after lunch.',
+      'Your ticket allows same-day re-entry, so a mid-afternoon break back at the car (or a café outside the park) is an option if energy dips.'
+    ]
+  },
+  gaps:[]
+},
+{
+  id:'d6', date:'Wed 2 Sep', title:'Villages Nature Paris', loc:'On resort, Bailly-Romainvilliers',
+  items:[
+    {cat:'forest', time:'14:30–15:00', tag:'Activity', title:'Aquatic Virtual Reality', place:'Masque VR2, on-resort',
+      details:[['Booked for','2 people'],['Price','€7.00 each (€14.00 total)'],['Rules','Must be able to swim, age 8+, swimwear required']]},
+    {cat:'forest', time:'14:45–15:30', tag:'Activity', title:'Meet the Small Animals', place:'Rencontre animaux 05, on-resort',
+      details:[['Booked for','1 person'],['Price','€21.00'],['Rules','For children aged 3–6, one paying accompanying adult required']]}
+  ],
+  gaps:[{when:'Morning, before the 14:30 activities', items:[
+    '<b>Aqualagon</b> — best used earlier in the day before it gets busy with afternoon arrivals.',
+    '<b>Extraordinary Gardens</b> — botanical, tropical greenhouse walk, easy pace, good shelter if weather turns.',
+    '<b>Forest of Legends</b> — outdoor trails and play areas if the kids need to burn energy before the VR/animal sessions.'
+  ]}]
+},
+{
+  id:'d7', date:'Thu 3 Sep', title:'Villages Nature Paris', loc:'On resort, Bailly-Romainvilliers',
+  items:[
+    {cat:'forest', time:'17:30–18:00', tag:'Activity', title:'Orry & Friends: On Adventure With…', place:'Center Parcs activity, Bailly-Romainvilliers', details:[]},
+    {cat:'forest', time:'18:00–19:00', tag:'Activity', title:'Bowling', place:'Bowling 11, on-resort',
+      details:[['Price','€40.00'],['Rules','Socks required, 50 minutes of play']]}
+  ],
+  gaps:[{when:'Daytime, before the 17:30 activity', items:[
+    '<b>Lakeside Promenade</b> — easiest half-day if you want to slow down before packing starts.',
+    '<b>Bike hire</b> — book via the website portal, in resort, or international.reservations@groupepvcp.com (pay locally); good way to see more of the domaine.',
+    'One more loop of Aqualagon before the bags come out tomorrow.'
+  ]}]
+},
+{
+  id:'d8', date:'Fri 4 Sep', title:'Heading home', loc:'Bailly-Romainvilliers → Calais → Folkestone',
+  items:[
+    {cat:'forest', time:'Before 10:00', tag:'Checkout', title:'Villages Nature Paris', place:'Bailly-Romainvilliers, 77700, France',
+      details:[['Reservation','n°2545790'],['Phone','01 73 27 55 91']]},
+    {cat:'travel', time:'~10:24–11:59 (UK time)', tag:'LeShuttle', title:'Calais → Folkestone', place:'Eurotunnel Calais/Coquelles Terminal',
+      details:[['Booking ref','23963150']],
+      conflict:'⚠ This departure looks too tight against a 10:00 checkout given the ~2h45–3h drive to Calais. Double-check your exact check-in cut-off and consider an earlier checkout or a later crossing.',
+      links:[['Live departures','https://www.leshuttle.com/uk-en/travel-updates/live-departures'],['Manage booking','https://www.leshuttle.com/uk-en/my-booking'],['Directions','https://www.google.com/maps/search/?api=1&query=Eurotunnel+Calais+Coquelles+Terminal']]}
+  ],
+  gaps:[]
+}
+];
+
+const nav = document.getElementById('dayNav');
+const panels = document.getElementById('dayPanels');
+
+DAYS.forEach((day, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'chip' + (i===0 ? ' active' : '');
+  btn.innerHTML = `<span class="d">${day.date}</span><span class="t">${day.title}</span>`;
+  btn.dataset.target = day.id;
+  btn.onclick = () => selectDay(day.id);
+  nav.appendChild(btn);
+
+  const panel = document.createElement('div');
+  panel.className = 'day-panel' + (i===0 ? ' active' : '');
+  panel.id = day.id;
+
+  let html = `<div class="day-head"><h2>${day.date} — ${day.title}</h2><div class="loc">${day.loc}</div></div>`;
+
+  if(day.items.length){
+    html += `<div class="timeline">`;
+    day.items.forEach(it => {
+      html += `<div class="item cat-${it.cat}"><div class="card">
+        <div class="top">
+          <span class="time">${it.time}</span>
+          <span class="tag">${it.tag}</span>
+        </div>
+        <h3>${it.title}</h3>
+        <div class="place">${it.place}</div>`;
+      if(it.details && it.details.length){
+        html += `<div class="details">` + it.details.map(d => `<div><span class="lbl">${d[0]}</span><span>${d[1]}</span></div>`).join('') + `</div>`;
+      }
+      if(it.note){ html += `<div class="note">${it.note}</div>`; }
+      if(it.conflict){ html += `<div class="conflict">${it.conflict}</div>`; }
+      if(it.links && it.links.length){
+        html += `<div class="links">` + it.links.map(l => `<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join('') + `</div>`;
+      }
+      html += `</div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  if(day.strategy){
+    html += `<div class="strategy"><h4>${day.strategy.title}</h4>
+      <div class="transport">` + day.strategy.transport.map(t => `<div class="opt"><div class="h">${t.h}</div><div class="v">${t.v}</div><div class="d">${t.d}</div></div>`).join('') + `</div>
+      <ol>` + day.strategy.steps.map(s => `<li>${s}</li>`).join('') + `</ol>
+    </div>`;
+  }
+
+  if(day.gaps && day.gaps.length){
+    day.gaps.forEach(g => {
+      html += `<div class="gap"><div class="gaphead">Free time — ${g.when}</div><ul>` + g.items.map(x => `<li>${x}</li>`).join('') + `</ul></div>`;
+    });
+  }
+
+  if(!day.items.length && !day.gaps.length){
+    html += `<p style="color:var(--md-on-surface-variant); font-size:14px;">Nothing booked yet for this day.</p>`;
+  }
+
+  panel.innerHTML = html;
+  panels.appendChild(panel);
+});
+
+function selectDay(id){
+  document.querySelectorAll('.chip').forEach(b => b.classList.toggle('active', b.dataset.target===id));
+  document.querySelectorAll('.day-panel').forEach(p => p.classList.toggle('active', p.id===id));
+}
+
+/* ===== PWA: service worker + install prompt ===== */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+/* ===== Live updates: poll the Apps Script feed every 90 min, until 5 Sep 2026 ===== */
+const LIVE_CONFIG = {
+  // Paste the /exec URL from your Apps Script deployment here (see Code.gs).
+  scriptUrl: 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
+  endDate: '2026-09-05T23:59:59',
+  intervalMs: 90 * 60 * 1000 // 90 minutes
+};
+
+const liveDot = document.getElementById('liveDot');
+const liveText = document.getElementById('liveText');
+const updatesFeed = document.getElementById('updatesFeed');
+const checkNowBtn = document.getElementById('checkNowBtn');
+
+function configured(){
+  return LIVE_CONFIG.scriptUrl && !LIVE_CONFIG.scriptUrl.startsWith('PASTE_');
+}
+function withinLiveWindow(){
+  return new Date() <= new Date(LIVE_CONFIG.endDate);
+}
+function setLiveStatus(state, extra){
+  liveDot.className = 'live-dot' + (state ? ' ' + state : '');
+  if(!configured()){
+    liveText.textContent = 'Live updates not yet configured (add your Apps Script URL)';
+  } else if(!withinLiveWindow()){
+    liveText.textContent = 'Live updates ended (trip window closed 5 Sep)';
+  } else if(state === 'checking'){
+    liveText.textContent = 'Checking Gmail & Calendar…';
+  } else if(state === 'error'){
+    liveText.textContent = 'Couldn\'t reach the live feed — will retry automatically';
+  } else if(state === 'ok'){
+    const t = extra ? extra.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+    liveText.textContent = `Checked ${t} · next check in ~90 min`;
+  }
+}
+
+function renderUpdatesFeed(newEmails, newEvents){
+  if(!newEmails.length && !newEvents.length){ updatesFeed.innerHTML = ''; return; }
+  let html = `<div class="updates-feed"><div class="fh">New since your last check</div><ul>`;
+  newEvents.forEach(ev => {
+    const d = new Date(ev.start);
+    html += `<li><b>${ev.title}</b> — ${d.toLocaleDateString([], {weekday:'short', day:'numeric', month:'short'})}, ${ev.allDay ? 'all day' : d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}${ev.location ? ' · ' + ev.location : ''}</li>`;
+  });
+  newEmails.forEach(em => {
+    html += `<li><b>Email:</b> ${em.subject} <span style="opacity:.75">(${em.from.replace(/<.*>/,'').trim()})</span></li>`;
+  });
+  html += `</ul><button class="dismiss" id="dismissFeed">Got it, hide this</button></div>`;
+  updatesFeed.innerHTML = html;
+  document.getElementById('dismissFeed').onclick = () => { updatesFeed.innerHTML = ''; };
+}
+
+async function checkForUpdates(){
+  if(!configured() || !withinLiveWindow()){ setLiveStatus(); return; }
+  setLiveStatus('checking');
+  try{
+    const res = await fetch(LIVE_CONFIG.scriptUrl, {cache:'no-store'});
+    const data = await res.json();
+
+    const seenEmails = JSON.parse(localStorage.getItem('seenEmailIds') || '[]');
+    const seenEvents = JSON.parse(localStorage.getItem('seenEventMap') || '{}');
+
+    const newEmails = (data.emails || []).filter(e => !seenEmails.includes(e.id));
+    const newOrChangedEvents = (data.events || []).filter(ev => seenEvents[ev.id] !== ev.lastUpdated);
+
+    // Don't flood the feed on the very first-ever check (that's just "everything
+    // in range", not "new") — only show deltas once we have a baseline.
+    const hadBaseline = localStorage.getItem('lastChecked') !== null;
+    if(hadBaseline){
+      renderUpdatesFeed(newEmails, newOrChangedEvents);
+    }
+
+    localStorage.setItem('seenEmailIds', JSON.stringify((data.emails || []).map(e => e.id)));
+    const eventMap = {};
+    (data.events || []).forEach(ev => { eventMap[ev.id] = ev.lastUpdated; });
+    localStorage.setItem('seenEventMap', JSON.stringify(eventMap));
+    localStorage.setItem('lastChecked', new Date().toISOString());
+
+    setLiveStatus('ok', new Date());
+  }catch(err){
+    setLiveStatus('error');
+  }
+}
+
+checkNowBtn.addEventListener('click', checkForUpdates);
+
+if(configured() && withinLiveWindow()){
+  const last = localStorage.getItem('lastChecked');
+  const due = !last || (Date.now() - new Date(last).getTime()) > LIVE_CONFIG.intervalMs;
+  if(due) checkForUpdates(); else setLiveStatus('ok', new Date(last));
+  setInterval(checkForUpdates, LIVE_CONFIG.intervalMs);
+} else {
+  setLiveStatus();
+}
+let deferredPrompt;
+const installBar = document.getElementById('installBar');
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('installDismissed')) installBar.style.display = 'flex';
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  installBar.style.display = 'none';
+});
+document.getElementById('dismissInstall').addEventListener('click', () => {
+  installBar.style.display = 'none';
+  localStorage.setItem('installDismissed', '1');
+});
+</script>
+</body>
+</html>

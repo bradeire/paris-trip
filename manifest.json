@@ -1,0 +1,17 @@
+{
+  "name": "Bradley Family — Paris Trip",
+  "short_name": "Paris Trip",
+  "description": "Day-by-day itinerary for the Bradley family trip to Paris, Villages Nature and Disneyland Paris, 28 Aug \u2013 4 Sep 2026.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FBFCF8",
+  "theme_color": "#5C63C9",
+  "lang": "en-GB",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
