@@ -24,11 +24,12 @@ self.addEventListener("activate", (event) => {
 
 // Network-first for the HTML shell (so edits show up quickly on wifi),
 // cache-first for everything else (so it still opens offline in the car / tunnel).
-// The live-updates feed (script.google.com) is always network-only — it must
-// never be served from cache, or "live" would just mean "frozen at install time".
+// The live-updates feed (script.google.com) and weather (open-meteo.com) are
+// always network-only — they must never be served from cache, or "live" would
+// just mean "frozen at install time".
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-  if (req.url.includes("script.google.com")) {
+  if (req.url.includes("script.google.com") || req.url.includes("open-meteo.com")) {
     event.respondWith(fetch(req, { cache: "no-store" }));
     return;
   }
